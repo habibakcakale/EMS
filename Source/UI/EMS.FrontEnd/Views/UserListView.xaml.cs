@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -12,22 +10,20 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
-namespace EMS.FrontEnd
+namespace EMS.FrontEnd.Views
 {
+    using ViewModels;
+
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for UserListView.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class UserListView : UserControl
     {
-        public MainWindow(ILogger<MainWindow> logger, ViewModels.MainWindowViewModel viewModel)
+        public UserListView()
         {
             InitializeComponent();
-            logger.LogInformation("Begin init");
-            this.DataContext = viewModel;
-
+            this.DataContext = new UserListViewModel();
         }
     }
 }

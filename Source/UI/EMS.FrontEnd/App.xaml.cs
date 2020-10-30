@@ -5,6 +5,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Serilog;
+    using ViewModels;
 
     /// <summary>
     /// Interaction logic for App.xaml
@@ -30,7 +31,11 @@
             return Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration(builder =>
                     builder.AddJsonFile("appsettings.json").AddEnvironmentVariables().Build())
-                .ConfigureServices(services => { services.AddScoped<MainWindow>(); })
+                .ConfigureServices(services => {
+                    services.AddScoped<MainWindow>();
+                    services.AddTransient<MainWindowViewModel>();
+                    services.AddHttpClient();
+                })
                 .UseSerilog((context, configuration) =>
                     configuration.ReadFrom.Configuration(context.Configuration, DependencyContext.Default));
         }

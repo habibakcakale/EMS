@@ -7,7 +7,9 @@
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="MaterialDesignThemes" Version="3.2.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.9" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.9" />
     <PackageReference Include="Serilog.Extensions.Hosting" Version="3.1.0" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
@@ -16,8 +18,9 @@
   <ItemGroup>
     <Folder Include="Controls\" />
     <Folder Include="Commands\" />
-    <Folder Include="ViewModels\" />
-    <Folder Include="Views\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\EMS.Common\EMS.Common.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">
