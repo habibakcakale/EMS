@@ -17,7 +17,5 @@
 
         [JsonPropertyName("updated_at")] public DateTime UpdatedAt { get; set; }
 
-        [JsonIgnore]
-        public bool IsSelected { get; set; }
     }
 }

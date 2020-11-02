@@ -2,27 +2,78 @@
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.ComponentModel;
     using System.Globalization;
-    using System.Runtime.CompilerServices;
+    using System.Linq;
     using System.Windows.Data;
-    using Annotations;
+    using System.Windows.Input;
+    using Commands;
+    using Common;
     using Common.User;
+    using Integration.User;
+    using MediatR;
 
-    public class UserListViewModel : INotifyPropertyChanged {
+    public class UserListViewModel : ViewModelBase {
+        private readonly IMediator mediator;
+        private Pagination pageInfo;
+        private string search;
+        private int? currentPage;
+        private ObservableCollection<User> users;
 
-        public ObservableCollection<User> Users { get; set; }
-        public UserListViewModel() {
-
+        public ObservableCollection<User> Users {
+            get => users;
+            set {
+                if (Equals(value, users)) return;
+                users = value;
+                OnPropertyChanged();
+            }
         }
 
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        public Pagination PageInfo {
+            get => pageInfo;
+            set {
+                if (Equals(value, pageInfo)) return;
+                pageInfo = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(Pages));
+            }
         }
+
+        public string Search {
+            get => search;
+            set {
+                if (value == search) return;
+                search = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int? CurrentPage {
+            get => currentPage;
+            set {
+                if (value == currentPage) return;
+                currentPage = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public IEnumerable<int> Pages => Enumerable.Range(1, PageInfo?.Pages ?? 1);
+
+        public ICommand LoadUserCommand { get; set; }
+
+        public UserListViewModel(IMediator mediator) {
+            this.mediator = mediator;
+            this.LoadUserCommand = new RelayCommand<object>(LoadUsers);
+
+        }
+        private async void LoadUsers(object request) {
+            var userList = await mediator.Send(new GetUserList.Request() {
+                Name = this.Search,
+                Page = this.CurrentPage ?? 0
+            });
+            this.Users = new ObservableCollection<User>(userList.Items);
+            this.PageInfo = userList.Pagination;
+        }
+
     }
 
     public class DateTimeFormatter : IValueConverter {

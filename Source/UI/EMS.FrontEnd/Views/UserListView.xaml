@@ -4,9 +4,104 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EMS.FrontEnd.Views"
-             xmlns:uc="clr-namespace:EMS.FrontEnd.Controls"
              xmlns:viewModels="clr-namespace:EMS.FrontEnd.ViewModels"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance viewModels:UserListViewModel }">
-    <uc:UserList Users="{Binding Users}"></uc:UserList>
+             d:DesignHeight="768" d:DesignWidth="1024" d:DataContext="{d:DesignInstance viewModels:UserListViewModel}">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadUserCommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <UserControl.Resources>
+        <viewModels:DateTimeFormatter x:Key="DateTimeFormatter"></viewModels:DateTimeFormatter>
+    </UserControl.Resources>
+    <materialDesign:DialogHost>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal">
+                <ComboBox Width="150" 
+                          ItemsSource="{Binding Pages}" 
+                          SelectedItem="{Binding CurrentPage}"
+                          materialDesign:HintAssist.Hint="Page"
+                          materialDesign:HintAssist.IsFloating="True">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate DataType="system:Int32">
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Right" Text="{Binding}"></TextBlock>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <i:InvokeCommandAction Command="{Binding LoadUserCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </ComboBox>
+            </StackPanel>
+            <StackPanel Grid.Row="0" Grid.Column="1"  Orientation="Horizontal" HorizontalAlignment="Right">
+                <TextBox Width="150"
+                         Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}"
+                         materialDesign:HintAssist.Hint="Search"
+                         materialDesign:HintAssist.HelperText="Search by name"
+                         materialDesign:HintAssist.IsFloating="True">
+                    <TextBox.InputBindings>
+                        <KeyBinding Command="{Binding LoadUserCommand}" Key="Enter"></KeyBinding>
+                    </TextBox.InputBindings>
+                </TextBox>
+            </StackPanel>
+            <DataGrid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"  ItemsSource="{Binding Users}"
+                  Style="{DynamicResource MaterialDesignDataGrid}"
+                  IsReadOnly="True"
+                  SelectionMode="Extended"
+                  AutoGenerateColumns="False"
+                  CanUserSortColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn
+                    Header="#"
+                    Width="100"
+                    ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
+                    EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}"
+                    Binding="{Binding Id}"></DataGridTextColumn>
+                    <DataGridTextColumn 
+                    Header="Name"
+                    Binding="{Binding Name}"></DataGridTextColumn>
+                    <DataGridTextColumn
+                    Header="E-mail"
+                    Binding="{Binding Email}"></DataGridTextColumn>
+                    <DataGridTextColumn
+                    Header="Gender"
+                    Binding="{Binding Gender}"></DataGridTextColumn>
+                    <DataGridTextColumn
+                    Header="Status"
+                    Binding="{Binding Status}"></DataGridTextColumn>
+                    <DataGridTextColumn
+                    Header="Created At"
+                    Binding="{Binding CreatedAt, Converter={StaticResource DateTimeFormatter}}"></DataGridTextColumn>
+                    <DataGridTextColumn 
+                    Header="Updated At"
+                    Binding="{Binding UpdatedAt, Converter={StaticResource DateTimeFormatter}}"></DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+            <Button Grid.Row="1" Grid.Column="1"
+                    Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}"
+                    ToolTip="MaterialDesignFloatingActionLightButton" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,10,10">
+                <materialDesign:PackIcon
+                    Kind="Plus"/>
+            </Button>
+            <Button Grid.Row="1" Grid.Column="1"
+                    Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}"
+                    ToolTip="MaterialDesignFloatingActionLightButton" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,55,10">
+                <materialDesign:PackIcon
+                    Kind="Trash"/>
+            </Button>
+        </Grid>
+    </materialDesign:DialogHost>
 </UserControl>

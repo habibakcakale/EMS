@@ -1,9 +1,17 @@
 ﻿namespace EMS.FrontEnd {
+    using System.Net.Cache;
+    using System.Text.Json;
     using System.Windows;
+    using Integration;
+    using Integration.User;
+    using MediatR;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyModel;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using RestSharp;
+    using RestSharp.Authenticators;
+    using RestSharp.Serializers.SystemTextJson;
     using Serilog;
     using ViewModels;
     using Views;
@@ -14,6 +22,7 @@
     public partial class App {
         private IHost host;
         private IServiceScope scope;
+
         protected override async void OnStartup(StartupEventArgs e) {
             host = CreateHostBuilder(e.Args).Build();
             await host.StartAsync();
@@ -33,12 +42,30 @@
             return Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration(builder =>
                     builder.AddJsonFile("appsettings.json").AddEnvironmentVariables().Build())
-                .ConfigureServices(services => {
+                .ConfigureServices((context, services) => {
+                    RegisterRestClient(context.Configuration, services);
+                    services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+                    services.AddMediatR(typeof(GetUserList).Assembly);
+
                     services.AddTransient<MainWindow>().AddTransient<MainWindowViewModel>();
                     services.AddTransient<UserListView>().AddTransient<UserListViewModel>();
+
                 })
                 .UseSerilog((context, configuration) =>
                     configuration.ReadFrom.Configuration(context.Configuration, DependencyContext.Default));
+        }
+
+        private static void RegisterRestClient(IConfiguration configuration, IServiceCollection services) {
+            var authToken = configuration.GetValue<string>("GoRest:AuthToken");
+            var endPoint = configuration.GetValue<string>("GoRest:Endpoint");
+            services.AddScoped<IRestClient>(provider => {
+                var client = new RestClient(endPoint) {
+                    Authenticator = new JwtAuthenticator(authToken),
+                    // Cache policy should handle E-Tag request response caching 
+                    CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.Default)
+                }.UseSystemTextJson(new JsonSerializerOptions {IgnoreNullValues = true});
+                return client;
+            });
         }
     }
 }
