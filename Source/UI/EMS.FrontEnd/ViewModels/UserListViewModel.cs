@@ -7,7 +7,7 @@
     using System.Runtime.CompilerServices;
     using System.Windows.Data;
     using Annotations;
-    using Common;
+    using Common.User;
 
     public class UserListViewModel : INotifyPropertyChanged {
 

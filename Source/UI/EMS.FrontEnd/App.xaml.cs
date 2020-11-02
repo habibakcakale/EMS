@@ -36,7 +36,6 @@
                 .ConfigureServices(services => {
                     services.AddTransient<MainWindow>().AddTransient<MainWindowViewModel>();
                     services.AddTransient<UserListView>().AddTransient<UserListViewModel>();
-                    services.AddHttpClient();
                 })
                 .UseSerilog((context, configuration) =>
                     configuration.ReadFrom.Configuration(context.Configuration, DependencyContext.Default));

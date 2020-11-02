@@ -3,7 +3,7 @@
     using System.Windows;
     using System.Windows.Controls;
     using System.Collections.ObjectModel;
-    using Common;
+    using Common.User;
 
     /// <summary>
     /// Interaction logic for UserListView.xaml
