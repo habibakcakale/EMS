@@ -1,4 +1,4 @@
-﻿namespace EMS.Common {
+﻿namespace EMS.Common.User {
     using System;
     using System.Text.Json.Serialization;
 
@@ -17,17 +17,7 @@
 
         [JsonPropertyName("updated_at")] public DateTime UpdatedAt { get; set; }
 
+        [JsonIgnore]
         public bool IsSelected { get; set; }
-    }
-
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum UserStatus {
-        Active,
-        Inactive
-    }
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum Gender {
-        Male,
-        Female
     }
 }

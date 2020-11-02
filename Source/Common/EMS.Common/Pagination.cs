@@ -1,5 +1,6 @@
 ﻿namespace EMS.Common
 {
+    using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
     public class Pagination
@@ -15,5 +16,10 @@
 
         [JsonPropertyName("limit")]
         public int Limit { get; set; }
+    }
+
+    public class PagedResult<T> {
+        public IEnumerable<T> Items { get; set; }
+        public Pagination Pagination { get; set; }
     }
 }

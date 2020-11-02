@@ -1,11 +1,11 @@
-﻿namespace EMS.Integration {
+﻿namespace EMS.Integration.User {
     using System;
     using System.Net;
-    using System.Text.Json;
     using System.Text.Json.Serialization;
     using System.Threading;
     using System.Threading.Tasks;
     using Common;
+    using Common.User;
     using MediatR;
     using RestSharp;
 
@@ -29,19 +29,9 @@
                 var userRequest = new RestRequest(new Uri("users", UriKind.Relative));
                 userRequest.AddJsonBody(request);
 
-                var response = await restClient.ExecutePostAsync(userRequest, cancellationToken);
-                var document = JsonDocument.Parse(response.Content);
-                var code = (HttpStatusCode)document.RootElement.GetProperty("code").GetInt32();
-                if (code != HttpStatusCode.Created) {
-                    throw new InvalidOperationException("Error while creating user.") {
-                        //Data = {{"Response", response.Content}}
-                    };
-                }
-
-                var user = JsonSerializer.Deserialize<User>(document.RootElement.GetProperty("data").GetRawText());
-                return user;
+                var response = await restClient.PostAsync<ApiResult<User>>(userRequest, cancellationToken).ConfigureAwait(false);
+                return response.GetResult(HttpStatusCode.Created);
             }
         }
-
     }
 }
