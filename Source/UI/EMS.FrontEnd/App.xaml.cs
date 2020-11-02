@@ -6,17 +6,18 @@
     using Microsoft.Extensions.Hosting;
     using Serilog;
     using ViewModels;
+    using Views;
 
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
     public partial class App {
         private IHost host;
-
+        private IServiceScope scope;
         protected override async void OnStartup(StartupEventArgs e) {
             host = CreateHostBuilder(e.Args).Build();
             await host.StartAsync();
-            using var scope = host.Services.CreateScope();
+            scope = host.Services.CreateScope();
             scope.ServiceProvider.GetRequiredService<MainWindow>().Show();
             base.OnStartup(e);
         }
@@ -24,6 +25,7 @@
         protected override async void OnExit(ExitEventArgs e) {
             await host.StopAsync();
             host.Dispose();
+            scope.Dispose();
             base.OnExit(e);
         }
 
@@ -32,8 +34,8 @@
                 .ConfigureAppConfiguration(builder =>
                     builder.AddJsonFile("appsettings.json").AddEnvironmentVariables().Build())
                 .ConfigureServices(services => {
-                    services.AddScoped<MainWindow>();
-                    services.AddTransient<MainWindowViewModel>();
+                    services.AddTransient<MainWindow>().AddTransient<MainWindowViewModel>();
+                    services.AddTransient<UserListView>().AddTransient<UserListViewModel>();
                     services.AddHttpClient();
                 })
                 .UseSerilog((context, configuration) =>

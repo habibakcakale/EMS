@@ -11,19 +11,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace EMS.FrontEnd.Views
-{
+namespace EMS.FrontEnd.Views {
     using ViewModels;
 
     /// <summary>
     /// Interaction logic for UserListView.xaml
     /// </summary>
-    public partial class UserListView : UserControl
-    {
-        public UserListView()
-        {
+    public partial class UserListView : UserControl {
+        public UserListView(UserListViewModel viewModel) {
             InitializeComponent();
-            this.DataContext = new UserListViewModel();
+            this.DataContext = viewModel;
         }
     }
 }

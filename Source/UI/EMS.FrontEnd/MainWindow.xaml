@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:EMS.FrontEnd"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:viewModels="clr-namespace:EMS.FrontEnd.ViewModels"
-        xmlns:views="clr-namespace:EMS.FrontEnd.Views"
+        xmlns:uc="clr-namespace:EMS.FrontEnd.Controls"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -25,13 +25,73 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"></RowDefinition>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"></ColumnDefinition>
-        </Grid.ColumnDefinitions>
-        <views:UserListView></views:UserListView>
-    </Grid>
+    <materialDesign:DrawerHost 
+                BorderThickness="2" 
+                BorderBrush="{DynamicResource MaterialDesignDivider}"
+                IsLeftDrawerOpen="{Binding ElementName=MenuToggleButton, Path=IsChecked}">
+        <materialDesign:DrawerHost.LeftDrawerContent>
+            <DockPanel MinWidth="220">
+                <ToggleButton 
+                        Style="{StaticResource MaterialDesignHamburgerToggleButton}" 
+                        DockPanel.Dock="Top"
+                        HorizontalAlignment="Right" 
+                        Margin="16"
+                        IsChecked="{Binding ElementName=MenuToggleButton, Path=IsChecked, Mode=TwoWay}"/>
+                <ListBox 
+                    ItemsSource="{Binding Routes}"
+                    SelectedItem="{Binding SelectedRoute}"
+                        Margin="0 16 0 16">
+                    <ListBox.Resources>
+                        <Style TargetType="ScrollBar" BasedOn="{StaticResource MaterialDesignScrollBarMinimal}"/>
+                    </ListBox.Resources>
+
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Title}" Margin="32 0 32 0"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </materialDesign:DrawerHost.LeftDrawerContent>
+
+        <DockPanel>
+            <materialDesign:ColorZone
+                    Padding="16"
+                    materialDesign:ShadowAssist.ShadowDepth="Depth2"
+                    Mode="PrimaryMid"
+                    DockPanel.Dock="Top">
+                <DockPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <ToggleButton
+                                x:Name="MenuToggleButton"
+                                Style="{StaticResource MaterialDesignHamburgerToggleButton}"
+                                IsChecked="False"/>
+                    </StackPanel>
+
+                    <materialDesign:PopupBox
+                            DockPanel.Dock="Right"
+                            PlacementMode="BottomAndAlignRightEdges"
+                            StaysOpen="False">
+                        <StackPanel>
+                            <StackPanel
+                                    Orientation="Horizontal"
+                                    HorizontalAlignment="Center"
+                                    Margin="10"></StackPanel>
+                        </StackPanel>
+                    </materialDesign:PopupBox>
+
+                    <TextBlock
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            FontSize="22"
+                            Text="Employee Management System"/>
+
+                </DockPanel>
+            </materialDesign:ColorZone>
+
+            <ScrollViewer materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True">
+                <ContentControl Content="{Binding RouteContent, UpdateSourceTrigger=PropertyChanged}" Margin="10" Padding="0"/>
+            </ScrollViewer>
+        </DockPanel>
+    </materialDesign:DrawerHost>
 </Window>

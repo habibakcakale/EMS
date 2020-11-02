@@ -2,25 +2,26 @@
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.ComponentModel;
     using System.Globalization;
+    using System.Runtime.CompilerServices;
     using System.Windows.Data;
+    using Annotations;
     using Common;
 
-    public class UserListViewModel {
-        public ObservableCollection<User> Users { get; set; }
+    public class UserListViewModel : INotifyPropertyChanged {
 
+        public ObservableCollection<User> Users { get; set; }
         public UserListViewModel() {
-            this.Users = new ObservableCollection<User>(new List<User>() {
-                new User() {
-                    Email = "habibakcakale@gmail.com",
-                    Name = "Habib Akcakale",
-                    CreatedAt = DateTime.Now,
-                    Gender = "Male",
-                    Id = 1,
-                    Status = "Active",
-                    UpdatedAt = DateTime.Now
-                }
-            });
+
+        }
+
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 
