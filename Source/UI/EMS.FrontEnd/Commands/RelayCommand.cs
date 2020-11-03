@@ -1,9 +1,10 @@
 ﻿namespace EMS.FrontEnd.Commands {
     using System;
+    using System.Threading.Tasks;
     using System.Windows.Input;
 
     public class RelayCommand<T> : ICommand {
-        private readonly Action<T> execute;
+        private readonly Func<T, Task> execute;
         private readonly Predicate<T> canExecute;
 
         /// <summary>
@@ -11,7 +12,7 @@
         /// </summary>
         /// <param name="execute">Delegate to execute when Execute is called on the command.  This can be null to just hook up a CanExecute delegate.</param>
         /// <remarks><seealso cref="CanExecute"/> will always return true.</remarks>
-        public RelayCommand(Action<T> execute)
+        public RelayCommand(Func<T, Task> execute)
             : this(execute, null) { }
 
         /// <summary>
@@ -19,7 +20,7 @@
         /// </summary>
         /// <param name="execute">The execution logic.</param>
         /// <param name="canExecute">The execution status logic.</param>
-        public RelayCommand(Action<T> execute, Predicate<T> canExecute) {
+        public RelayCommand(Func<T, Task> execute, Predicate<T> canExecute) {
             this.execute = execute ?? throw new ArgumentNullException(nameof(execute));
             this.canExecute = canExecute;
         }

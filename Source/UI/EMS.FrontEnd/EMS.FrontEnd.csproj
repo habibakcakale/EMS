@@ -19,9 +19,6 @@
 
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Controls\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\Common\EMS.Common\EMS.Common.csproj" />
     <ProjectReference Include="..\..\Integration\EMS.Integration\EMS.Integration.csproj" />
   </ItemGroup>

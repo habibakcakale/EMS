@@ -4,6 +4,7 @@
     using System.Collections.ObjectModel;
     using System.Globalization;
     using System.Linq;
+    using System.Threading.Tasks;
     using System.Windows.Data;
     using System.Windows.Input;
     using Commands;
@@ -56,16 +57,37 @@
             }
         }
 
+        public User User { get; set; }
         public IEnumerable<int> Pages => Enumerable.Range(1, PageInfo?.Pages ?? 1);
 
         public ICommand LoadUserCommand { get; set; }
+        public ICommand SaveUserCommand { get; set; }
 
         public UserListViewModel(IMediator mediator) {
             this.mediator = mediator;
             this.LoadUserCommand = new RelayCommand<object>(LoadUsers);
+            this.SaveUserCommand = new RelayCommand<User>(SaveUser);
 
         }
-        private async void LoadUsers(object request) {
+
+        private async Task SaveUser(User user) {
+            if (user.Id > 0)
+                await mediator.Send(new UpdateUser.Request() {
+                    Id = user.Id,
+                    Gender = user.Gender,
+                    Name = user.Name,
+                    Status = user.Status,
+                    Email = user.Email
+                });
+            await mediator.Send(new CreateUser.Request() {
+                Email = user.Email,
+                Gender = user.Gender,
+                Name = user.Name,
+                Status = user.Status
+            });
+        }
+
+        private async Task LoadUsers(object request) {
             var userList = await mediator.Send(new GetUserList.Request() {
                 Name = this.Search,
                 Page = this.CurrentPage ?? 0
