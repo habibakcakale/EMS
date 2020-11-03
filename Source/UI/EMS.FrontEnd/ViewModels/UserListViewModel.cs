@@ -1,24 +1,25 @@
 ﻿namespace EMS.FrontEnd.ViewModels {
-    using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
-    using System.Windows.Data;
     using System.Windows.Input;
     using Commands;
     using Common;
     using Common.User;
     using Integration.User;
+    using MaterialDesignThemes.Wpf;
     using MediatR;
+    using Services;
 
     public class UserListViewModel : ViewModelBase {
         private readonly IMediator mediator;
+        private readonly ICsvExportService exportService;
         private Pagination pageInfo;
         private string search;
         private int? currentPage;
         private ObservableCollection<User> users;
+        private User selectedUser;
 
         public ObservableCollection<User> Users {
             get => users;
@@ -57,29 +58,51 @@
             }
         }
 
-        public User User { get; set; }
-        public IEnumerable<int> Pages => Enumerable.Range(1, PageInfo?.Pages ?? 1);
-
-        public ICommand LoadUserCommand { get; set; }
-        public ICommand SaveUserCommand { get; set; }
-
-        public UserListViewModel(IMediator mediator) {
-            this.mediator = mediator;
-            this.LoadUserCommand = new RelayCommand<object>(LoadUsers);
-            this.SaveUserCommand = new RelayCommand<User>(SaveUser);
-
+        public User SelectedUser {
+            get => selectedUser;
+            set {
+                if (Equals(value, selectedUser)) return;
+                selectedUser = value;
+                OnPropertyChanged();
+            }
         }
 
-        private async Task SaveUser(User user) {
+        public IEnumerable<int> Pages => Enumerable.Range(1, PageInfo?.Pages ?? 1);
+        public ICommand LoadUserCommand { get; set; }
+        public ICommand SaveUserCommand { get; set; }
+        public ICommand DeleteUsersCommand { get; set; }
+        public ICommand DownloadUsersCommand { get; set; }
+
+        private Task DownloadUsers(object args) {
+            return exportService.ExportAsync("./users.csv", this.Users);
+        }
+
+        public UserListViewModel(IMediator mediator, ICsvExportService exportService) {
+            this.mediator = mediator;
+            this.exportService = exportService;
+            this.LoadUserCommand = new RelayCommand<object>(LoadUsers);
+            this.SaveUserCommand = new RelayCommand<DialogClosingEventArgs>(SaveUser);
+            this.DeleteUsersCommand = new RelayCommand<User>(DeleteUsers, user => this.SelectedUser != null);
+            this.DownloadUsersCommand = new RelayCommand<object>(DownloadUsers, args => this.Users?.Count > 0);
+        }
+
+        private async Task DeleteUsers(User user) {
+            await mediator.Send(new DeleteUser.Request {Id = user.Id});
+            await LoadUsers(null);
+        }
+
+        private async Task SaveUser(DialogClosingEventArgs args) {
+            var user = args?.Parameter as NewUserControlViewModel;
+            if (user == null) return;
             if (user.Id > 0)
-                await mediator.Send(new UpdateUser.Request() {
+                await mediator.Send(new UpdateUser.Request {
                     Id = user.Id,
                     Gender = user.Gender,
                     Name = user.Name,
                     Status = user.Status,
                     Email = user.Email
                 });
-            await mediator.Send(new CreateUser.Request() {
+            await mediator.Send(new CreateUser.Request {
                 Email = user.Email,
                 Gender = user.Gender,
                 Name = user.Name,
@@ -94,21 +117,6 @@
             });
             this.Users = new ObservableCollection<User>(userList.Items);
             this.PageInfo = userList.Pagination;
-        }
-
-    }
-
-    public class DateTimeFormatter : IValueConverter {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-            if (value is DateTime date) {
-                return date.ToShortDateString();
-            }
-
-            return string.Empty;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-            return System.Convert.ChangeType(value, targetType, culture);
         }
     }
 }

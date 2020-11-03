@@ -15,6 +15,7 @@ namespace EMS.FrontEnd.Controls {
     using System.Linq;
     using Common.User;
     using MaterialDesignThemes.Wpf;
+    using ViewModels;
 
     /// <summary>
     /// Interaction logic for NewUserControl.xaml
@@ -22,9 +23,8 @@ namespace EMS.FrontEnd.Controls {
     public partial class NewUserControl : UserControl {
         public NewUserControl() {
             InitializeComponent();
+            this.DataContext = new NewUserControlViewModel(); // TODO: Inject 
         }
 
-        public IEnumerable<Gender> Genders { get; set; } = Enum.GetValues(typeof(Gender)).Cast<Gender>();
-        public IEnumerable<UserStatus> Statuses { get; set; } = Enum.GetValues(typeof(UserStatus)).Cast<UserStatus>();
     }
 }

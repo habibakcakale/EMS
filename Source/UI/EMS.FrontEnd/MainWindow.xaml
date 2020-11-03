@@ -66,19 +66,6 @@
                                 Style="{StaticResource MaterialDesignHamburgerToggleButton}"
                                 IsChecked="False"/>
                     </StackPanel>
-
-                    <materialDesign:PopupBox
-                            DockPanel.Dock="Right"
-                            PlacementMode="BottomAndAlignRightEdges"
-                            StaysOpen="False">
-                        <StackPanel>
-                            <StackPanel
-                                    Orientation="Horizontal"
-                                    HorizontalAlignment="Center"
-                                    Margin="10"></StackPanel>
-                        </StackPanel>
-                    </materialDesign:PopupBox>
-
                     <TextBlock
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"

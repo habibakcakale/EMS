@@ -13,6 +13,7 @@
     using RestSharp.Authenticators;
     using RestSharp.Serializers.SystemTextJson;
     using Serilog;
+    using Services;
     using ViewModels;
     using Views;
 
@@ -46,7 +47,7 @@
                     RegisterRestClient(context.Configuration, services);
                     services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
                     services.AddMediatR(typeof(GetUserList).Assembly);
-
+                    services.AddTransient<ICsvExportService, ExportService>();
                     services.AddTransient<MainWindow>().AddTransient<MainWindowViewModel>();
                     services.AddTransient<UserListView>().AddTransient<UserListViewModel>();
 
