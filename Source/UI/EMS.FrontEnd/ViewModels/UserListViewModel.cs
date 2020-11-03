@@ -15,6 +15,7 @@
     public class UserListViewModel : ViewModelBase {
         private readonly IMediator mediator;
         private readonly ICsvExportService exportService;
+        private readonly IFileDialogService fileDialogService;
         private Pagination pageInfo;
         private string search;
         private int? currentPage;
@@ -74,12 +75,14 @@
         public ICommand DownloadUsersCommand { get; set; }
 
         private Task DownloadUsers(object args) {
-            return exportService.ExportAsync("./users.csv", this.Users);
+            var filePath = fileDialogService.OpenDialog();
+            return exportService.ExportAsync(filePath, this.Users);
         }
 
-        public UserListViewModel(IMediator mediator, ICsvExportService exportService) {
+        public UserListViewModel(IMediator mediator, ICsvExportService exportService, IFileDialogService fileDialogService) {
             this.mediator = mediator;
             this.exportService = exportService;
+            this.fileDialogService = fileDialogService;
             this.LoadUserCommand = new RelayCommand<object>(LoadUsers);
             this.SaveUserCommand = new RelayCommand<DialogClosingEventArgs>(SaveUser);
             this.DeleteUsersCommand = new RelayCommand<User>(DeleteUsers, user => this.SelectedUser != null);

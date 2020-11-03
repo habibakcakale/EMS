@@ -48,6 +48,7 @@
                     services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
                     services.AddMediatR(typeof(GetUserList).Assembly);
                     services.AddTransient<ICsvExportService, ExportService>();
+                    services.AddTransient<IFileDialogService, FileDialogService>();
                     services.AddTransient<MainWindow>().AddTransient<MainWindowViewModel>();
                     services.AddTransient<UserListView>().AddTransient<UserListViewModel>();
 
